@@ -80,10 +80,8 @@ Para configurarlo:
 Ejemplo recomendado:
 
 ```text
-Meta+V
+Super+V
 ```
-
-`Meta` corresponde normalmente a la tecla Windows/Super.
 
 Para que la apertura sea instantánea, conviene dejar la aplicación corriendo en segundo plano y usar el atajo global interno.
 
@@ -108,13 +106,7 @@ Al eliminar una imagen del historial también se elimina su archivo asociado. Al
 
 ## Pruebas
 
-Ejecutar pruebas unitarias:
-
-```bash
-python3 -m unittest discover -s tests
-```
-
-O usando el entorno virtual:
+Usando el entorno virtual:
 
 ```bash
 venv/bin/python -m unittest discover -s tests
@@ -176,9 +168,8 @@ settings.py    Configuración en JSON.
 ipc.py         Comunicación con una instancia ya abierta.
 config.py      Rutas y constantes.
 utils.py       Utilidades pequeñas.
-tests/         Pruebas unitarias.
 ```
 
 ## Licencia
 
-Licencia pendiente de definir.
+De libre uso, sientase libre de modificar o mejorar el proyecto.
