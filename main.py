@@ -96,14 +96,14 @@ def run_app(
         try:
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
             painter.setPen(
-                QPen(QColor("#f3f4f6"), 2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
+                QPen(QColor("#FF0000"), 2, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
             )
-            painter.setBrush(QColor("#2563eb"))
+            painter.setBrush(QColor("#ffffff"))
             painter.drawRoundedRect(7, 8, 18, 19, 4, 4)
-            painter.setBrush(QColor("#f3f4f6"))
+            painter.setBrush(QColor("#000000"))
             painter.drawRoundedRect(11, 5, 10, 6, 2, 2)
             painter.setPen(
-                QPen(QColor("#dbeafe"), 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
+                QPen(QColor("#000000"), 1.6, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap)
             )
             painter.drawLine(11, 15, 21, 15)
             painter.drawLine(11, 20, 18, 20)
