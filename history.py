@@ -50,6 +50,7 @@ class HistoryStore:
             item for item in raw_items
             if isinstance(item, dict) and self._is_valid_item(item)
         ]
+        self._sort_pinned_first()
         self._enforce_limit()
         self.save()
 
@@ -108,6 +109,7 @@ class HistoryStore:
             return False
 
         item["pinned"] = pinned
+        self._move_to_group_top(item)
         self.save()
         return True
 
@@ -165,16 +167,38 @@ class HistoryStore:
                 remove_file(path)
 
     def _prepend(self, item: dict[str, Any]) -> None:
-        self.items.insert(0, item)
+        self.items.insert(self._top_index_for(item), item)
         self._enforce_limit(protected_id=item["id"])
         self.save()
 
     def _move_to_top(self, item: dict[str, Any]) -> dict[str, Any]:
-        self.items.remove(item)
         item["created_at"] = utc_now_iso()
-        self.items.insert(0, item)
+        self._move_to_group_top(item)
         self.save()
         return item
+
+    def _move_to_group_top(self, item: dict[str, Any]) -> None:
+        self.items.remove(item)
+        self.items.insert(self._top_index_for(item), item)
+
+    def _top_index_for(self, item: dict[str, Any]) -> int:
+        if item.get("pinned", False):
+            return 0
+        return self._first_unpinned_index()
+
+    def _first_unpinned_index(self) -> int:
+        return next(
+            (
+                index for index, item in enumerate(self.items)
+                if not item.get("pinned", False)
+            ),
+            len(self.items),
+        )
+
+    def _sort_pinned_first(self) -> None:
+        pinned_items = [item for item in self.items if item.get("pinned", False)]
+        unpinned_items = [item for item in self.items if not item.get("pinned", False)]
+        self.items = pinned_items + unpinned_items
 
     def _find_text_duplicate(self, value: str) -> dict[str, Any] | None:
         return next(

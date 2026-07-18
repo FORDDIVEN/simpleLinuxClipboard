@@ -84,13 +84,16 @@ class ClipboardWindow(QWidget):
             self.hide()
             return
 
-        self.refresh()
+        self.selected_index = 0
+        self.refresh(auto_scroll=False)
         self._suppress_auto_hide = True
         self.show()
         self._move_to_bottom_right()
         self.raise_()
         self.activateWindow()
         self.search_box.setFocus()
+        self._scroll_to_top()
+        QTimer.singleShot(0, self._scroll_to_top)
         QTimer.singleShot(250, self._allow_auto_hide)
 
     def showEvent(self, event) -> None:
@@ -113,7 +116,7 @@ class ClipboardWindow(QWidget):
             self.hide()
         super().changeEvent(event)
 
-    def refresh(self) -> None:
+    def refresh(self, auto_scroll: bool = True) -> None:
         previous_index = self.selected_index
         self._clear_items()
         self.item_widgets = []
@@ -135,7 +138,10 @@ class ClipboardWindow(QWidget):
 
         self.list_layout.addStretch(1)
         if self.item_widgets:
-            self.set_selected_index(min(max(previous_index, 0), len(self.item_widgets) - 1))
+            self.set_selected_index(
+                min(max(previous_index, 0), len(self.item_widgets) - 1),
+                auto_scroll=auto_scroll,
+            )
         else:
             self.selected_index = -1
 
@@ -154,8 +160,10 @@ class ClipboardWindow(QWidget):
         QTimer.singleShot(PASTE_DELAY_MS, paste_clipboard)
 
     def toggle_pin(self, item: dict[str, Any]) -> None:
+        scroll_value = self._scroll_value()
         self.history.pin(str(item["id"]), not item.get("pinned", False))
-        self.refresh()
+        self.refresh(auto_scroll=False)
+        self._restore_scroll_value(scroll_value)
 
     def delete_item(self, item: dict[str, Any]) -> None:
         self.history.delete(str(item["id"]))
@@ -205,7 +213,7 @@ class ClipboardWindow(QWidget):
         next_index = max(0, min(self.selected_index + delta, len(self.item_widgets) - 1))
         self.set_selected_index(next_index)
 
-    def set_selected_index(self, index: int) -> None:
+    def set_selected_index(self, index: int, auto_scroll: bool = True) -> None:
         if not self.item_widgets:
             self.selected_index = -1
             return
@@ -214,8 +222,26 @@ class ClipboardWindow(QWidget):
         for current_index, widget in enumerate(self.item_widgets):
             widget.set_selected(current_index == self.selected_index)
 
-        if self.scroll_area is not None:
+        if auto_scroll and self.scroll_area is not None:
             self.scroll_area.ensureWidgetVisible(self.item_widgets[self.selected_index])
+
+    def _scroll_value(self) -> int:
+        if self.scroll_area is None:
+            return 0
+        return self.scroll_area.verticalScrollBar().value()
+
+    def _restore_scroll_value(self, value: int) -> None:
+        if self.scroll_area is None:
+            return
+
+        scrollbar = self.scroll_area.verticalScrollBar()
+        scrollbar.setValue(value)
+        QTimer.singleShot(0, lambda: scrollbar.setValue(value))
+
+    def _scroll_to_top(self) -> None:
+        if self.scroll_area is None:
+            return
+        self.scroll_area.verticalScrollBar().setValue(0)
 
     def copy_selected_item(self) -> None:
         if 0 <= self.selected_index < len(self.item_widgets):
