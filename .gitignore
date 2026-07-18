@@ -13,6 +13,16 @@ build/
 dist/
 *.spec
 
+# Debian/package build outputs
+*.deb
+*.dsc
+*.changes
+*.buildinfo
+*.tar.gz
+*.tar.xz
+package/
+deb-build/
+
 .pytest_cache/
 .coverage
 htmlcov/
