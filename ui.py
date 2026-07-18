@@ -37,6 +37,7 @@ from PySide6.QtWidgets import (
 )
 
 from history import HistoryStore
+from paste import PASTE_DELAY_MS, paste_clipboard
 
 
 class ClipboardWindow(QWidget):
@@ -150,6 +151,7 @@ class ClipboardWindow(QWidget):
                 self.clipboard.setImage(image)
 
         self.hide()
+        QTimer.singleShot(PASTE_DELAY_MS, paste_clipboard)
 
     def toggle_pin(self, item: dict[str, Any]) -> None:
         self.history.pin(str(item["id"]), not item.get("pinned", False))
