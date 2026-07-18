@@ -14,6 +14,8 @@ dist/
 *.spec
 
 # Debian/package build outputs
+packaging/
+scripts/build-deb.sh
 *.deb
 *.dsc
 *.changes

@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=WinV Clipboard
-Comment=Historial de portapapeles estilo Win+V
-Exec=winvclipboard
-Icon=winvclipboard
-Terminal=false
-Categories=Utility;
-StartupNotify=false
